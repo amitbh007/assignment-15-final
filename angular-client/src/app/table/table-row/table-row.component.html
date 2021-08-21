@@ -1,0 +1,12 @@
+<!-- <tr> -->
+    <td *ngFor="let obj of outputObject" class="px-5 py-5 border-b border-gray-200 bg-white text-sm" [innerHtml]="obj | sanitizeHtml"></td>
+    <td *ngIf="content" class="px-5 py-5 border-b border-gray-200 bg-white text-sm" >
+        <button class="mx-1 bg-blue-700 py-1 px-3 my-2 rounded-full text-white hover:text-gray-500 text-sm" (click)="handleEditClick()" >edit</button> 
+        <button class="mx-1 bg-blue-700 py-1 px-3 my-2 rounded-full text-white hover:text-gray-500 text-sm" (click)="handleDeleteClick()">delete</button>
+    </td>
+    <td *ngIf="!content" class="px-5 py-5 border-b border-gray-200 bg-white text-sm" >
+        <button class="mx-1 bg-blue-700 py-1 px-3 my-2 rounded-full text-white hover:text-gray-500 text-sm" (click)="handleSaveClick()" >save</button> 
+        <button class="mx-1 bg-blue-700 py-1 px-3 my-2 rounded-full text-white hover:text-gray-500 text-sm" (click)="handleCancelClick()">cancel</button>
+    </td>
+<!-- </tr> -->
+    
