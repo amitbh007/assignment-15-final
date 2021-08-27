@@ -11,7 +11,7 @@ import { DataService } from '../services/data.service';
 export class LoginComponent implements OnInit {
 
   credentials = {
-    email:"",
+    username:"",
     password:""
   }
   constructor(private dataService:DataService,private cookieService:CookieService,private router:Router) { }

@@ -14,10 +14,13 @@ import { PasswordHasherBinding, TokenServiceBindings, TokenServiceConstants, Use
 import { MyuserService } from './services/user-service';
 import { BcryptHasher } from './services/hasher.password.bcrypt';
 import { JWTService } from './services/jwt-service';
-import { AuthenticationComponent } from '@loopback/authentication';
+// import { AuthenticationComponent } from '@loopback/authentication';
 import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
 import { PostgreDbDataSource } from './datasources';
 import { AuthorizationBindings, AuthorizationComponent } from 'loopback4-authorization';
+import { Strategies,AuthenticationComponent } from 'loopback4-authentication';
+import { LocalPasswordVerifyProvider } from './services/localPassowrdVerifyProvider';
+import { BearerTokenVerifyProvider } from './services/bearerTokenVerifyProvider';
 // import { AuthorizationBindings } from '@loopback/authorization/dist/keys';
 
 export {ApplicationConfig};
@@ -35,7 +38,14 @@ export class Lb4ServerApplication extends BootMixin(
     this.dataSource(PostgreDbDataSource);
 
     // Set up the custom sequence
-    this.sequence(MySequence);
+
+    this.bind(Strategies.Passport.LOCAL_PASSWORD_VERIFIER).toProvider(
+      LocalPasswordVerifyProvider,
+    );
+
+    this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(
+      BearerTokenVerifyProvider,
+    );
 
     this.bind(PasswordHasherBinding.PASSWORD_HASHER).toClass(BcryptHasher);
     this.bind(PasswordHasherBinding.ROUNDS).to(10);
@@ -57,6 +67,9 @@ export class Lb4ServerApplication extends BootMixin(
       allowAlwaysPaths: ['/explorer'],
     });
     this.component(AuthorizationComponent);
+
+    this.sequence(MySequence);
+
 
 
     this.projectRoot = __dirname;

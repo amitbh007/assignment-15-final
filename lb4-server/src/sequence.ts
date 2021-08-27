@@ -9,6 +9,7 @@ import {
   RequestContext,
   RestBindings,
   Send,
+  SequenceActions,
   SequenceHandler,
 } from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
@@ -17,7 +18,6 @@ import {
   AuthorizationBindings,
   AuthorizeErrorKeys,
   AuthorizeFn,
-  UserPermissionsFn,
 } from 'loopback4-authorization';
 import { TokenServiceBindings, UserServiceBindings } from './keys';
 import { Role } from './models';
@@ -27,9 +27,10 @@ import { RoleRepository, UserRepository } from './repositories';
 import { JWTService } from './services/jwt-service';
 import { MyuserService } from './services/user-service';
 
-const SequenceActions = RestBindings.SequenceActions;
+// const SequenceActions = RestBindings.SequenceActions;
 
 export class MySequence implements SequenceHandler {
+  
   constructor(
     @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
     @inject(SequenceActions.PARSE_PARAMS) protected parseParams: ParseParams,
@@ -44,6 +45,8 @@ export class MySequence implements SequenceHandler {
     public userService: MyuserService,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: JWTService,
+    @inject(AuthenticationBindings.USER_AUTH_ACTION)
+    protected authenticateRequest: AuthenticateFn<User>,
   ) {}
 
   async handle(context: RequestContext) {
@@ -51,27 +54,28 @@ export class MySequence implements SequenceHandler {
     try {
       const {request, response} = context;
 
-        response.header('Access-Control-Allow-Origin', '*');
-        response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        response.header('Access-Control-Allow-Methods', '*');
-        // response.status(200);
+      response.header('Access-Control-Allow-Origin', '*');
+      response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+      response.header('Access-Control-Allow-Methods', '*');
+
+
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
       request.body = args[args.length - 1];
-
+      const authUser: User = await this.authenticateRequest(request);
       console.log("hit",request.headers);
       let permissions :any = ["general"];
 
-      if(request.method=="OPTIONS"){
+      if(request.method=="OPTIONS"){      
           response.status(200);
       }
       if(request.headers.authorization){
         //   this.userService.verifyCredentials({email:})
 
-        const uid = request.headers.authorization.split(" ")[1];
-        const up:UserProfile = await this.jwtService.verifyToken(uid);
-        console.log("user from req",up)
-        const user:User = await this.userRepository.findById(Number((up as any).id));
+      const uid = request.headers.authorization.split(" ")[1];
+      const up:UserProfile = await this.jwtService.verifyToken(uid);
+      console.log("user from req",up)
+      const user:User = await this.userRepository.findById(Number((up as any).id));
         //get the role permissions from user 
 
         // "generalAuth",

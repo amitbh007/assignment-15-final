@@ -1,4 +1,4 @@
-import { authenticate } from '@loopback/authentication';
+// import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -16,6 +16,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import { authenticate, STRATEGY } from 'loopback4-authentication';
 import { authorize } from 'loopback4-authorization';
 import {
   Customer,
@@ -28,7 +29,7 @@ export class CustomerUserController {
     @repository(CustomerRepository) protected customerRepository: CustomerRepository,
   ) { }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @get('/customers/{id}/users', {
     responses: {
@@ -49,7 +50,8 @@ export class CustomerUserController {
     return this.customerRepository.users(id).find(filter);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @post('/customers/{id}/users', {
     responses: {
@@ -76,7 +78,8 @@ export class CustomerUserController {
     return this.customerRepository.users(id).create(user);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @patch('/customers/{id}/users', {
     responses: {
@@ -101,7 +104,8 @@ export class CustomerUserController {
     return this.customerRepository.users(id).patch(user, where);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["completeAuth"]})
   @del('/customers/{id}/users', {
     responses: {

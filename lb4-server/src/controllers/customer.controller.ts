@@ -1,4 +1,4 @@
-import { authenticate } from '@loopback/authentication';
+// import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -18,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { authenticate, STRATEGY } from 'loopback4-authentication';
 import { authorize } from 'loopback4-authorization';
 import {Customer} from '../models';
 import {CustomerRepository} from '../repositories';
@@ -28,7 +29,8 @@ export class CustomerController {
     public customerRepository : CustomerRepository,
   ) {}
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @post('/customers')
   @response(200, {
@@ -51,7 +53,8 @@ export class CustomerController {
     return this.customerRepository.create(customer);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @get('/customers/count')
   @response(200, {
@@ -64,7 +67,8 @@ export class CustomerController {
     return this.customerRepository.count(where);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @get('/customers')
   @response(200, {
@@ -84,7 +88,8 @@ export class CustomerController {
     return this.customerRepository.find(filter);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @patch('/customers')
   @response(200, {
@@ -105,7 +110,8 @@ export class CustomerController {
     return this.customerRepository.updateAll(customer, where);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @get('/customers/{id}')
   @response(200, {
@@ -123,7 +129,8 @@ export class CustomerController {
     return this.customerRepository.findById(id, filter);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @patch('/customers/{id}')
   @response(204, {
@@ -143,7 +150,8 @@ export class CustomerController {
     await this.customerRepository.updateById(id, customer);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["advancedAuth","completeAuth"]})
   @put('/customers/{id}')
   @response(204, {
@@ -156,7 +164,8 @@ export class CustomerController {
     await this.customerRepository.replaceById(id, customer);
   }
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["completeAuth"]})
   @del('/customers/{id}')
   @response(204, {

@@ -43,6 +43,28 @@ export class MyuserService implements UserService<User, Credentials>{
         return {id: user.id, name: user.email,[securityId]: (user.id||"").toString(),}
     }
 
+    async verifyPassoword(username:string,password:string): Promise<User> {
+        console.log("entered")
+        const foundUser:User|null = await this.UserRepository.findOne({
+            where: {
+                username
+            }
+        });
+    
+        console.log("founduser",foundUser);
+    
+        if (!foundUser) {
+            throw new HttpErrors.NotFound(`user not found with this ${username}`);
+        }
+        const passwordMatched = await this.hasher.comparePassword(password, foundUser.password!);
+    
+        if (!passwordMatched) {
+            throw new HttpErrors.Unauthorized('Password doesnt matches');
+        }
+        return foundUser;
+    
+    }
+
 
 
 }

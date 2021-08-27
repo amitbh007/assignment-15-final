@@ -23,7 +23,8 @@ export class UsersFormComponent implements OnInit {
     email:"",
     phone:"",
     customerId:1,
-    password:""
+    password:"",
+    username:""
   }
   id:number
   error:boolean = false;

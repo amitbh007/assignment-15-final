@@ -19,10 +19,10 @@ export class DataService {
 
     constructor(private http:HttpClient,private cookieService:CookieService,private router:Router){}
 
-    loginUser(credentials:{email:string,password:string}){
+    loginUser(credentials:{username:string,password:string}){
         console.log("cred",credentials);
         console.log("cred2",`${origin}/users/login`);
-        this.http.post(`${origin}/users/login`,credentials).subscribe((data)=>{
+        this.http.post(`${origin}/users/login`,{...credentials,email:"p@g.com"}).subscribe((data)=>{
             console.log("data",data);
             this.jwtToken.emit((data as any).token);
             // return data;
@@ -34,7 +34,7 @@ export class DataService {
         const uid = this.cookieService.get("uid")
         if(uid){
 
-            this.http.get(`${origin}/users?filter=%7B%0A%20%20%22offset%22%3A%200%2C%0A%20%20%22limit%22%3A%20100%2C%0A%20%20%22skip%22%3A%200%2C%0A%20%20%22where%22%3A%20%7B%0A%20%20%20%20%22additionalProp1%22%3A%20%7B%7D%0A%20%20%7D%2C%0A%20%20%22fields%22%3A%20%7B%0A%20%20%20%20%22id%22%3A%20true%2C%0A%20%20%20%20%22firstName%22%3A%20true%2C%0A%20%20%20%20%22middleName%22%3A%20true%2C%0A%20%20%20%20%22lastName%22%3A%20true%2C%0A%20%20%20%20%22email%22%3A%20true%2C%0A%20%20%20%20%22password%22%3A%20true%2C%0A%20%20%20%20%22phone%22%3A%20true%2C%0A%20%20%20%20%22address%22%3A%20true%2C%0A%20%20%20%20%22customerId%22%3A%20true%2C%0A%20%20%20%20%22roleKey%22%3A%20true%0A%20%20%7D%2C%0A%20%20%22include%22%3A%20%5B%0A%20%20%20%20%22customer%22%0A%20%20%5D%0A%7D`
+            this.http.get(`${origin}/users?filter=%7B%0A%20%20%22offset%22%3A%200%2C%0A%20%20%22limit%22%3A%20100%2C%0A%20%20%22skip%22%3A%200%2C%0A%20%20%22where%22%3A%20%7B%0A%20%20%20%20%22additionalProp1%22%3A%20%7B%7D%0A%20%20%7D%2C%0A%20%20%22fields%22%3A%20%7B%0A%20%20%20%20%22id%22%3A%20true%2C%0A%20%20%20%20%22firstName%22%3A%20true%2C%0A%20%20%20%20%22middleName%22%3A%20true%2C%0A%20%20%20%20%22lastName%22%3A%20true%2C%0A%20%20%20%20%22email%22%3A%20true%2C%0A%20%20%20%20%22username%22%3A%20true%2C%0A%20%20%20%20%22password%22%3A%20true%2C%0A%20%20%20%20%22phone%22%3A%20true%2C%0A%20%20%20%20%22address%22%3A%20true%2C%0A%20%20%20%20%22customerId%22%3A%20true%2C%0A%20%20%20%20%22roleKey%22%3A%20true%0A%20%20%7D%2C%0A%20%20%22include%22%3A%20%5B%0A%20%20%20%20%0A%20%20%20%20%22customer%22%0A%20%20%5D%0A%7D`
             ,{
                 headers:{"Authorization":`Bearer ${uid}`}
             }).subscribe((data)=>{
@@ -88,6 +88,7 @@ export class DataService {
 
         const uid = this.cookieService.get("uid")
         if(uid){
+            console.log("inputUser-eyy",inputUser)
             this.http.put(`${origin}/users/${id}`,inputUser
             ,{headers:{"Authorization":`Bearer ${uid}`}}).subscribe(data=>{
                 console.log("update data",data);

@@ -77,9 +77,9 @@ now before u run the app
 {
   "name": "SUPER_ADMIN",
   "permissions": [
-    "generalAUth",
+    "generalAuth",
     "advancedAuth",
-    "completeAuth
+    "completeAuth"
   ]
 }
 ```
@@ -87,8 +87,8 @@ now before u run the app
 {
   "name": "ADMIN",
   "permissions": [
-    "generalAUth",
-    "advancedAuth",
+    "generalAuth",
+    "advancedAuth"
   ]
 }
 ```
@@ -96,7 +96,7 @@ now before u run the app
 {
   "name": "SUBSCRIBER",
   "permissions": [
-    "generalAUth"
+    "generalAuth"
   ]
 }
 ```

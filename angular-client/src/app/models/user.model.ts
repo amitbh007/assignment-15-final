@@ -8,6 +8,7 @@ export class User{
     customerName:string
     phone:string
     email:string
+    username:string
 
     constructor(init:string){
         this.id = 0

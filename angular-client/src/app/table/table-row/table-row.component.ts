@@ -104,7 +104,7 @@ export class TableRowComponent implements OnInit {
 
     Object.keys(this.data).forEach((key)=>{
       console.log("input keys",key);
-      if(key!="customer"&&key!="id"&&key!="customerId"&&key!="users"&&key!="password"){
+      if(key!="customer"&&key!="id"&&key!="customerId"&&key!="users"&&key!="password"&&key!="username"){
         input = {...input,[key]:(<HTMLInputElement>document.getElementById(`i_${key}${this.index}`)).value}
       }
     })
@@ -113,7 +113,8 @@ export class TableRowComponent implements OnInit {
       ...input,
       id:this.data.id,
       customerId:(this.data as any).customerId,
-      password:this.data.password
+      password:this.data.password,
+      username:this.data.username
     } 
 
     delete (input as any).__typename;

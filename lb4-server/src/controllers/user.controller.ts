@@ -28,10 +28,11 @@ import {UserRepository} from '../repositories';
 import { JWTService } from '../services/jwt-service';
 import { MyuserService } from '../services/user-service';
 import { Credentials } from '@loopback/authentication-jwt';
-import { authenticate } from '@loopback/authentication';
+// import { authenticate } from '@loopback/authentication';
 import { genSalt, hash } from 'bcryptjs';
 import { permissionKeys } from '../authorization/permission-keys';
 import { authorize } from 'loopback4-authorization';
+import { authenticate, AuthenticationBindings, STRATEGY } from 'loopback4-authentication';
 
 @model()
 export class NewUserRequest extends User {
@@ -76,6 +77,7 @@ export class UserController {
     @repository(UserRepository) protected userRepository: UserRepository,
   ) {}
 
+  @authenticate(STRATEGY.LOCAL)
   @authorize({permissions:["general"]})
   @post('/users/login', {
     responses: {
@@ -97,19 +99,17 @@ export class UserController {
     },
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
+    @requestBody(CredentialsRequestBody) credentials: {username:"string",password:"string"},
+    @inject(AuthenticationBindings.CURRENT_USER)
+    getCurrentUser:any
   ): Promise<{token: string}> {
-    // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile = this.userService.convertToUserProfile(user);
-    console.log("userProfile");
-    // create a JSON Web Token based on the user profile
-    const token = await this.jwtService.generateToken(userProfile);
+    const token = await this.jwtService.generateToken(getCurrentUser);
+    console.log("credentials",credentials);
+    console.log("logged in user",getCurrentUser);
     return {token};
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["general"]})
   @get('/whoAmI', {
     responses: {
@@ -126,10 +126,10 @@ export class UserController {
     },
   })
   async whoAmI(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    getCurrentUser:any
   ): Promise<string> {
-    return currentUserProfile[securityId];
+    return getCurrentUser;
   }
 
   @authorize({permissions:["general"]})
@@ -191,7 +191,7 @@ export class UserController {
     return this.userRepository.create(user);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["general"]})
   @get('/users/count')
   @response(200, {
@@ -204,7 +204,7 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["general"]})
   @get('/users')
   @response(200, {
@@ -224,7 +224,7 @@ export class UserController {
     return this.userRepository.find(filter);
   }
   
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["generalAuth","advancedAuth","completeAuth"]})
   @patch('/users')
   @response(200, {
@@ -245,7 +245,7 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["generalAuth","advancedAuth","completeAuth"]})
   @get('/users/{id}')
   @response(200, {
@@ -263,7 +263,7 @@ export class UserController {
     return this.userRepository.findById(id, filter);
   }
 
-  @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
   @authorize({permissions:["generalAuth","advancedAuth","completeAuth"]})
   @patch('/users/{id}')
   @response(204, {
@@ -283,8 +283,8 @@ export class UserController {
     await this.userRepository.updateById(id, user);
   }
 
-  @authenticate('jwt')
-  @authorize({permissions:["generalAuth","advancedAuth","completeAuth"]})
+  @authenticate(STRATEGY.BEARER)
+  @authorize({permissions:["general","generalAuth","advancedAuth","completeAuth"]})
   @put('/users/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -296,8 +296,9 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
-  @authenticate('jwt')
-  @authorize({permissions:["completeAuth"]})
+  // @authenticate('jwt')
+  @authenticate(STRATEGY.BEARER)
+  @authorize({permissions:["advancedAuth","completeAuth"]})
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',
